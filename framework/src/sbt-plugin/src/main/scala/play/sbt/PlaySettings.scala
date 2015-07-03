@@ -128,7 +128,7 @@ object PlaySettings {
 
     sources in (Compile, RoutesKeys.routes) ++= {
       val dirs = (unmanagedResourceDirectories in Compile).value
-      (dirs * "routes").get ++ (dirs * "*.routes").get
+      (dirs * "*.yaml").get ++ (dirs * "*.json").get ++ (dirs * "routes").get ++ (dirs * "*.routes").get
     },
 
     playMonitoredFiles <<= PlayCommands.playMonitoredFilesTask,

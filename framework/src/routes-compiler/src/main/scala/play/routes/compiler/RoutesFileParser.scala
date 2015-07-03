@@ -12,19 +12,24 @@ import scala.util.parsing.input._
 
 import scala.language.postfixOps
 
-object RoutesFileParser {
+object RoutesFileParser extends RoutesParser with SwaggerRoutes {
 
-  /**
-   * Parse the given routes file
-   *
-   * @param routesFile The routes file to parse
-   * @return Either the list of compilation errors encountered, or a list of routing rules
-   */
-  def parse(routesFile: File): Either[Seq[RoutesCompilationError], List[Rule]] = {
+  def parse(inputFile: File): Either[Seq[RoutesCompilationError], List[Rule]] = {
 
-    val routesContent = FileUtils.readFileToString(routesFile)
+    val parseSpec = run {
+      if (inputFile.getName.endsWith(".yaml"))
+        ParseRoutesFromYaml
+      else if (inputFile.getName.endsWith(".json"))
+        ParseRoutesFromJson
+      else
+        ParseNative
+    }
 
-    parseContent(routesContent, routesFile)
+    val input = FileUtils.readFileToString(inputFile)
+    for {
+      spec <- parseSpec(input, inputFile).right
+      routes <- parseRoutes(spec, inputFile).right
+    } yield routes
   }
 
   /**
@@ -34,7 +39,7 @@ object RoutesFileParser {
    * @param routesFile The routes file (used for error reporting)
    * @return Either the list of compilation errors encountered, or a list of routing rules
    */
-  def parseContent(routesContent: String, routesFile: File): Either[Seq[RoutesCompilationError], List[Rule]] = {
+  def parseRoutes(routesContent: String, routesFile: File): Either[Seq[RoutesCompilationError], List[Rule]] = {
     val parser = new RoutesFileParser()
 
     parser.parse(routesContent) match {

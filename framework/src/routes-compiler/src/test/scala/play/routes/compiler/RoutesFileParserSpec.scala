@@ -19,7 +19,7 @@ object RoutesFileParserSpec extends Specification {
     }
 
     def parseRule(line: String): Rule = {
-      val result = RoutesFileParser.parseContent(line, new File("routes"))
+      val result = RoutesFileParser.parseRoutes(line, new File("routes"))
       result must beRight[Any]
       val rules = result.right.get
       rules.length must_== 1
@@ -27,7 +27,7 @@ object RoutesFileParserSpec extends Specification {
     }
 
     def parseError(line: String): Result = {
-      val result = RoutesFileParser.parseContent(line, new File("routes"))
+      val result = RoutesFileParser.parseRoutes(line, new File("routes"))
       result match {
         case Left(errors) => ok
         case Right(rules) => ko("Routes compilation was successful, expected error")
@@ -123,4 +123,15 @@ object RoutesFileParserSpec extends Specification {
     "throw an error if no include file specified" in parseError("-> /s")
   }
 
+  "parse a json file" in {
+    val jsonFile = new File(getClass.getClassLoader.getResource("petstore-simple.json").toURI)
+    val result = RoutesFileParser.parse(jsonFile)
+    result.isRight must beTrue
+  }
+
+  "not parse a json file" in {
+    val jsonFile = new File(getClass.getClassLoader.getResource("petstore-broke.json").toURI)
+    val result = RoutesFileParser.parse(jsonFile)
+    result.isLeft must beTrue
+  }
 }
