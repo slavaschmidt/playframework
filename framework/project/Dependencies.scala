@@ -22,7 +22,8 @@ object Dependencies {
     "com.fasterxml.jackson.core" % "jackson-annotations",
     "com.fasterxml.jackson.core" % "jackson-databind",
     "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310",
+    "com.fasterxml.jackson.dataformat"  % "jackson-dataformat-yaml"
   ).map(_ % "2.5.4")
 
   val slf4j = Seq("slf4j-api", "jul-to-slf4j", "jcl-over-slf4j").map("org.slf4j" % _ % "1.7.12")
@@ -148,7 +149,7 @@ object Dependencies {
   val routesCompilerDependencies =  Seq(
     "commons-io" % "commons-io" % "2.4",
     specsMatcherExtra % Test
-  ) ++ specsBuild.map(_ % Test)
+  ) ++ jacksons ++ specsBuild.map(_ % Test)
 
   private def sbtPluginDep(sbtVersion: String, scalaVersion: String, moduleId: ModuleID) = {
     moduleId.extra(

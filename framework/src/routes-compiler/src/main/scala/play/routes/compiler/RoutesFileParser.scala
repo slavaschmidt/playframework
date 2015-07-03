@@ -12,7 +12,7 @@ import scala.util.parsing.input._
 
 import scala.language.postfixOps
 
-object RoutesFileParser {
+object RoutesFileParser extends SwaggerDecorator {
 
   /**
    * Parse the given routes file
@@ -24,7 +24,18 @@ object RoutesFileParser {
 
     val routesContent = FileUtils.readFileToString(routesFile)
 
-    parseContent(routesContent, routesFile)
+    val eitherDecorator = decorate {
+      if (routesFile.getName.endsWith(".yaml"))
+        SwaggerYaml
+      else if (routesFile.getName.endsWith(".json"))
+        SwaggerJson
+      else NotASwagger
+    }
+
+    for {
+      content <- eitherDecorator(routesContent, routesFile).right
+      result <- parseContent(content, routesFile).right
+    } yield result
   }
 
   /**

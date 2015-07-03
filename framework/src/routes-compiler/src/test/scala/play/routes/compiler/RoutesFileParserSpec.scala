@@ -123,4 +123,15 @@ object RoutesFileParserSpec extends Specification {
     "throw an error if no include file specified" in parseError("-> /s")
   }
 
+  "parse a json file" in {
+    val jsonFile = new File(getClass.getClassLoader.getResource("petstore-simple.json").toURI)
+    val result = RoutesFileParser.parse(jsonFile)
+    result.isRight must beTrue
+  }
+
+  "not parse a json file" in {
+    val jsonFile = new File(getClass.getClassLoader.getResource("petstore-broke.json").toURI)
+    val result = RoutesFileParser.parse(jsonFile)
+    result.isLeft must beTrue
+  }
 }
