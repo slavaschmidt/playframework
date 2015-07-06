@@ -12,12 +12,12 @@ object SwaggerFileParserSpec extends Specification {
 
     "parse the basic swagger json" in {
       val (file: File, json: String) = readFile("petstore-simple.json")
-      ParseRoutesFromYaml.specify(json, file).isRight must beTrue
+      ParseRoutesFromJson.specify(json, file).isRight must beTrue
     }
 
     "parse the broken swagger json" in {
       val (file: File, json: String) = readFile("petstore-broke.json")
-      ParseRoutesFromYaml.specify(json, file).isRight must beFalse
+      ParseRoutesFromJson.specify(json, file).isRight must beFalse
     }
 
   }
@@ -26,12 +26,12 @@ object SwaggerFileParserSpec extends Specification {
 
     "parse the basic swagger yaml" in {
       val (file: File, json: String) = readFile("petstore.yaml")
-      ParseRoutesFromJson.specify(json, file).isRight must beTrue
+      ParseRoutesFromYaml.specify(json, file).isRight must beTrue
     }
 
     "parse the broken swagger yaml" in {
       val (file: File, json: String) = readFile("petstore-broke.yaml")
-      ParseRoutesFromJson.specify(json, file).isRight must beFalse
+      ParseRoutesFromYaml.specify(json, file).isRight must beFalse
     }
 
   }
