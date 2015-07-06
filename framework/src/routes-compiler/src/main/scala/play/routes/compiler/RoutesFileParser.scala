@@ -12,30 +12,24 @@ import scala.util.parsing.input._
 
 import scala.language.postfixOps
 
-object RoutesFileParser extends SwaggerDecorator {
+object RoutesFileParser extends RoutesParser with SwaggerRoutes {
 
-  /**
-   * Parse the given routes file
-   *
-   * @param routesFile The routes file to parse
-   * @return Either the list of compilation errors encountered, or a list of routing rules
-   */
-  def parse(routesFile: File): Either[Seq[RoutesCompilationError], List[Rule]] = {
+  def parse(inputFile: File): Either[Seq[RoutesCompilationError], List[Rule]] = {
 
-    val routesContent = FileUtils.readFileToString(routesFile)
-
-    val eitherDecorator = decorate {
-      if (routesFile.getName.endsWith(".yaml"))
-        SwaggerYaml
-      else if (routesFile.getName.endsWith(".json"))
-        SwaggerJson
-      else NotASwagger
+    val parseSpec = run {
+      if (inputFile.getName.endsWith(".yaml"))
+        ParseRoutesFromYaml
+      else if (inputFile.getName.endsWith(".json"))
+        ParseRoutesFromJson
+      else
+        ParseNative
     }
 
+    val input = FileUtils.readFileToString(inputFile)
     for {
-      content <- eitherDecorator(routesContent, routesFile).right
-      result <- parseContent(content, routesFile).right
-    } yield result
+      spec <- parseSpec(input, inputFile).right
+      routes <- parseRoutes(spec, inputFile).right
+    } yield routes
   }
 
   /**

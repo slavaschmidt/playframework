@@ -19,7 +19,7 @@ object RoutesFileParserSpec extends Specification {
     }
 
     def parseRule(line: String): Rule = {
-      val result = RoutesFileParser.parseContent(line, new File("routes"))
+      val result = RoutesFileParser.parseRoutes(line, new File("routes"))
       result must beRight[Any]
       val rules = result.right.get
       rules.length must_== 1
@@ -27,7 +27,7 @@ object RoutesFileParserSpec extends Specification {
     }
 
     def parseError(line: String): Result = {
-      val result = RoutesFileParser.parseContent(line, new File("routes"))
+      val result = RoutesFileParser.parseRoutes(line, new File("routes"))
       result match {
         case Left(errors) => ok
         case Right(rules) => ko("Routes compilation was successful, expected error")
